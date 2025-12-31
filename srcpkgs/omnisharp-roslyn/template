@@ -1,0 +1,40 @@
+# Template file for 'omnisharp-roslyn'
+pkgname=omnisharp-roslyn
+version=1.39.15
+revision=1
+archs="x86_64"
+short_desc="OmniSharp server based on Roslyn workspaces"
+maintainer="Rigoberto L. Perez <rlperez@kablamo.me>"
+license="MIT"
+homepage="https://github.com/OmniSharp/omnisharp-roslyn"
+changelog="https://github.com/OmniSharp/omnisharp-roslyn/blob/master/CHANGELOG.md"
+distfiles="https://github.com/OmniSharp/omnisharp-roslyn/releases/download/v${version}/omnisharp-linux-x64-net6.0.tar.gz"
+checksum="e34b2ad29c31202b05dbdc1439600f98ea38acf656f84817c52e3dda81879f6c"
+
+do_install() {
+	vmkdir usr/bin
+	vmkdir usr/lib/omnisharp-roslyn
+	vmkdir usr/lib/xbps-scripts
+
+	# Copy all extracted files
+	vcopy . usr/lib/omnisharp-roslyn
+	vlicense license.md
+
+	# Symlink the executable (capital 'O' in filename)
+	vbin ./OmniSharp omnisharp
+	vbin ./OmniSharp OmniSharp
+
+	cat > ${DESTDIR}/usr/bin/omnisharp <<'EOF'
+#!/bin/sh
+exec /usr/lib/omnisharp-roslyn/OmniSharp "$@"
+EOF
+
+	cat > ${DESTDIR}/usr/bin/OmniSharp <<'EOF'
+#!/bin/sh
+exec /usr/lib/omnisharp-roslyn/OmniSharp "$@"
+EOF
+
+
+	chmod 0755 ${DESTDIR}/usr/bin/omnisharp
+	chmod 0755 ${DESTDIR}/usr/bin/OmniSharp
+}
